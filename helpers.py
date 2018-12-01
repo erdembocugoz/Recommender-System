@@ -6,18 +6,15 @@ from itertools import groupby
 import numpy as np
 import scipy.sparse as sp
 
-
 def read_txt(path):
     """read text file from path."""
     with open(path, "r") as f:
         return f.read().splitlines()
 
-
 def load_data(path_dataset):
     """Load data in text format, one rating per line, as in the kaggle competition."""
     data = read_txt(path_dataset)[1:]
     return preprocess_data(data)
-
 
 def preprocess_data(data):
     """preprocessing the text data, conversion to numerical array format."""
@@ -73,3 +70,26 @@ def calculate_mse(real_label, prediction):
     """calculate MSE."""
     t = real_label - prediction
     return 1.0 * t.dot(t.T)
+
+
+#######################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

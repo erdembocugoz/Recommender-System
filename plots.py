@@ -51,3 +51,35 @@ def plot_train_test_data(train, test):
     plt.tight_layout()
     plt.savefig("train_test")
     plt.show()
+    
+def plot_mean_and_std_per_user(user_means, user_stds):
+    data = user_means
+
+    bins = np.arange(0, 5, 0.05) # fixed bin size
+    plt.xlim([min(data) -0.5, max(data) + 0.5])
+    plt.hist(data, bins=bins, alpha=0.5)
+    plt.title('mean per user')
+    plt.xlabel('mean')
+    plt.ylabel('count')
+    plt.show()
+
+    data = user_stds
+    
+    bins = np.arange(0, 2, 0.03) # fixed bin size
+
+    plt.xlim([min(data) - 0.3, max(data) + 0.3])
+
+    plt.hist(data, bins=bins, alpha=0.5)
+    plt.title('std per user')
+    plt.xlabel('std')
+    plt.ylabel('count')
+    plt.show()
+
+
+
+
+
+
+
+    
+    
