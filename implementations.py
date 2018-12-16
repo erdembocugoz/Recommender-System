@@ -7,7 +7,7 @@ import numpy as np
 import pickle
 
 def load_data(train_file, submission_file):
-    train_file, submission_file, toBeSubmitted = modify_data(train_file, submission_file)
+    train_file, submission_file, df, df_toBeSubmitted = modify_data(train_file, submission_file)
     reader = Reader(line_format='user item rating', sep=',')
     
     fold = [(train_file, submission_file)]
@@ -19,7 +19,7 @@ def load_data(train_file, submission_file):
         data = trainset
         test = testset
     
-    return data, test, toBeSubmitted
+    return data, test, df, df_toBeSubmitted
 
 def modify_data(train_file, submission_file):
     df = pd.read_csv(train_file)
@@ -63,7 +63,7 @@ def modify_data(train_file, submission_file):
                                'timestamp': np.int32,
                              })
     
-    return 'tmp_train.csv', 'tmp_test.csv', df_test  
+    return 'tmp_train.csv', 'tmp_test.csv', df, df_test  
 
 def submission_table(original_df, col_userID, col_movie, col_rate):
     """ return table according with Kaggle convention """
