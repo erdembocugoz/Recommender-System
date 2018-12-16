@@ -1,5 +1,6 @@
 from surprise import *
 from surprise.model_selection import PredefinedKFold
+from surprise.model_selection import GridSearchCV
 
 import pandas as pd
 import numpy as np
@@ -100,10 +101,41 @@ def create_submission_file(submission_filename, algo, predictions, toBeSubmitted
     with open('fm_model.pkl', 'wb') as f:
         pickle.dump(algo, f)
             
+#####################################################################################
+            
+            
+def learn(algtype, trainset, testset, df, param_grid):
+    #TUNE HYPERPARAM VIA GRIDSEARCH
+    reader = Reader(rating_scale=(1, 5))
+    data = Dataset.load_from_df(df[['User', 'Movie', 'Rating']], reader)
+    #trainset, testset = train_test_split(data, test_size=.25, random_state=20)
+    gs = GridSearchCV(algtype, param_grid, measures=['rmse', 'mae'], cv=3)
 
-            
-            
-            
+    model = gs.fit(data)
+
+    # best RMSE score
+    print(gs.best_score['rmse'])
+
+    # combination of parameters that gave the best RMSE score
+    print(gs.best_params['rmse'])
+    
+    #FIT AND PREDICT
+    # Fit
+    factor = gs.best_params['rmse']['n_factors']
+    epoch = gs.best_params['rmse']['n_epochs']
+    lr_rate = gs.best_params['rmse']['lr_all']
+    reg_rate = gs.best_params['rmse']['reg_all']
+
+    #algo = SVD(n_factors=factor ,n_epochs=epoch, lr_all=lr_rate, reg_all=reg_rate)
+    algo = gs.best_estimator['rmse']
+
+    model = algo.fit(trainset)
+
+
+    # Predict
+    predictions = algo.test(testset)
+    
+    return algo, predictions
             
             
             
