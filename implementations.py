@@ -198,7 +198,7 @@ def runBaselineOnly(trainset, testset, toBeSubmitted):
     # Predict
     predictions = algo.test(testset)  
     # Create Submission file
-    create_submission_file('SlopeOne', predictions, toBeSubmitted)
+    create_submission_file('BaselineOnly', predictions, toBeSubmitted)
     
     return toBeSubmitted
             
