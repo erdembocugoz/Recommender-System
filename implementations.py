@@ -73,7 +73,7 @@ def tuneHyperParams(algtype, trainset, testset, df, param_grid):
     reader = Reader(rating_scale=(1, 5))
     data = Dataset.load_from_df(df[['User', 'Movie', 'Rating']], reader)
     #trainset, testset = train_test_split(data, test_size=.25, random_state=20)
-    gs = GridSearchCV(algtype, param_grid, measures=['rmse'], cv=5)
+        gs = GridSearchCV(algtype, param_grid, measures=['rmse'], cv=3)
 
     model = gs.fit(data)
 
