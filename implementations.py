@@ -65,44 +65,8 @@ def modify_data(train_file, submission_file):
                              })
     
     return 'tmp_train.csv', 'tmp_test.csv', df, df_test  
-
-def submission_table(original_df, col_userID, col_movie, col_rate):
-    """ return table according with Kaggle convention """
-
-    def id(row):
-        return 'r' + str(int(row[col_userID])) + '_c' + str(int(row[col_movie]))
-
-    def pred(row):
-        return row[col_rate]
-
-    df = pd.DataFrame.copy(original_df)
-    df['Id'] = df.apply(id, axis=1)
-    df['Prediction'] = df.apply(pred, axis=1)
-
-    return df[['Id', 'Prediction']]
-
-def create_submission_file(submission_filename, algo, predictions, toBeSubmitted):
-    pred = np.zeros(len(predictions))
-    for i in range(len(predictions)):
-        val = predictions[i].est
-        if val > 5:
-            pred[i] = 5
-        elif val < 1:
-            pred[i] = 1
-        else:
-            pred[i] = val
             
-    toBeSubmitted.Rating = (np.round(pred)).astype(int)
-
-    submission = submission_table(toBeSubmitted, 'User', 'Movie', 'Rating')
-
-    file_name = submission_filename + '.csv'
-    submission.to_csv(file_name, index=False)
-    with open('fm_model.pkl', 'wb') as f:
-        pickle.dump(algo, f)
-            
-#####################################################################################
-            
+##################################################################################### 
             
 def tuneHyperParams(algtype, trainset, testset, df, param_grid):
     #TUNE HYPERPARAM VIA GRIDSEARCH
@@ -133,16 +97,110 @@ def fitAndPredict(gs, trainset, testset):
     predictions = algo.test(testset)
     return predictions
             
+######################################################################################
+
+def submission_table(original_df, col_userID, col_movie, col_rate):
+    """ return table according with Kaggle convention """
+
+    def id(row):
+        return 'r' + str(int(row[col_userID])) + '_c' + str(int(row[col_movie]))
+
+    def pred(row):
+        return row[col_rate]
+
+    df = pd.DataFrame.copy(original_df)
+    df['Id'] = df.apply(id, axis=1)
+    df['Prediction'] = df.apply(pred, axis=1)
+
+    return df[['Id', 'Prediction']]
+
+def create_submission_file(submission_filename, predictions, toBeSubmitted):
+    pred = np.zeros(len(predictions))
+    for i in range(len(predictions)):
+        val = predictions[i].est
+        if val > 5:
+            pred[i] = 5
+        elif val < 1:
+            pred[i] = 1
+        else:
+            pred[i] = val
             
+    toBeSubmitted.Rating = (np.round(pred)).astype(int)
+
+    submission = submission_table(toBeSubmitted, 'User', 'Movie', 'Rating')
+
+    file_name = submission_filename + '.csv'
+    submission.to_csv(file_name, index=False)
             
+######################################################################################## 
             
-            
-            
-            
-            
-            
-            
-            
+def runSVD(trainset, testset, toBeSubmitted):
+    
+    algo = SVD(n_epochs=30,lr_all=0.001,reg_all=0.001)
+    
+    # Fit
+    model = algo.fit(trainset)
+    # Predict
+    predictions = algo.test(testset)
+    # Create Submission file
+    create_submission_file('SVD', predictions, toBeSubmitted)
+    
+    return toBeSubmitted
+    
+def runSVDpp(trainset, testset, toBeSubmitted):
+    
+    algo = SVDpp(n_epochs=30,lr_all=0.001,reg_all=0.001)
+    
+    # Fit
+    model = algo.fit(trainset)
+    # Predict
+    predictions = algo.test(testset)
+    # Create Submission file
+    create_submission_file('SVDpp', predictions, toBeSubmitted)
+    
+    return toBeSubmitted
+    
+    
+def runKNN(trainset, testset, toBeSubmitted):
+
+    bsl_options = {'method': 'als','n_epochs': 20}
+    sim_options = {'name': 'pearson_baseline'}
+    algo = KNNBasic(k=300, bsl_options=bsl_options, sim_options=sim_options)
+    
+    # Fit
+    model = algo.fit(trainset)
+    # Predict
+    predictions = algo.test(testset)
+    # Create Submission file
+    create_submission_file('KNN', predictions, toBeSubmitted)
+    
+    return toBeSubmitted
+    
+def runSlopeOne(trainset, testset, toBeSubmitted):
+    
+    algo = SlopeOne()
+    
+    # Fit
+    model = algo.fit(trainset)
+    # Predict
+    predictions = algo.test(testset)
+    # Create Submission file
+    create_submission_file('SlopeOne', predictions, toBeSubmitted)
+    
+    return toBeSubmitted
+    
+def runBaselineOnly(trainset, testset, toBeSubmitted):
+    
+    algo = BaselineOnly()
+    
+    # Fit
+    model = algo.fit(trainset)
+    # Predict
+    predictions = algo.test(testset)  
+    # Create Submission file
+    create_submission_file('SlopeOne', predictions, toBeSubmitted)
+    
+    return toBeSubmitted
             
             
             
