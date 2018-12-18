@@ -24,7 +24,7 @@ def make_datasets():
     df_train = make_dataframe("data_train.csv")
     df_predict = make_dataframe("data_test.csv")
 
-    X_train, X_test, y_train, y_test = train_test_split(df_train[['User','Movie']], df_train['Rating'], test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(df_train[['User','Movie']], df_train['Rating'], test_size=0.5, random_state=56)
     data_train = X_train.join(y_train)
     data_test = X_test.join(y_test)
     data_actual_train = df_train
@@ -50,7 +50,7 @@ def get_predicts(data_train,data_test,spark_context):
     svd_pred = surprise_SVD(train_file,test_file)
     #pyfm_pred = model_pyfm(data_train,data_test)
 
-    
+
     return np.array([knn_ub_pred,knn_ib_pred,svd_pred,als_pred])
 def calculate_rmse(real_labels, predictions):
     """Calculate RMSE."""
