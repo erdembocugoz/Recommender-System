@@ -53,7 +53,7 @@ Install custom libraries
   * blend.py : Contains blending(voting) function to ensemble different models.
   * helpers.py : Contains helper functions, i.e. reading csv files, transforming data frames etc.
   
-## Problem with Spark
+## Possible Problem with Spark
 
 It is possible to get an error for Java connection if PySpark's ALS function is used with maxIter value greater than 24. But it is also possible that is a problem only on our devices. 
   
