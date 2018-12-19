@@ -3,7 +3,7 @@
 
 import numpy as np
 import scipy.sparse as sp
-from helpers import *
+from implementations import *
 from itertools import groupby
 
 ########################################################################################
