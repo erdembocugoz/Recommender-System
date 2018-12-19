@@ -28,3 +28,4 @@ Install custom libraries
   ```
   
 * PySpark
+  * You can find a detailed installation guide for pySpark [here](https://medium.com/tinghaochen/how-to-install-pyspark-locally-94501eefe421)
