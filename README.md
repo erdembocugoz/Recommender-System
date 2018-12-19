@@ -23,7 +23,7 @@ Install custom libraries
 
 * PyFM
 
- * You can directly install it from this [this GitHub repo](https://github.com/coreylynch/pyFM) by:
+ -You can directly install it from this [this GitHub repo](https://github.com/coreylynch/pyFM) by:
   ```
      pip install git+https://github.com/coreylynch/pyFM
   ```
