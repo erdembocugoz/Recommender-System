@@ -15,3 +15,8 @@ pip install libraries
 Install custom libraries
 * Surprise
   * You can find detailed installation guide and how to use the library here: http://surpriselib.com
+  * Or you can directly install it from this [this GitHub repo](https://github.com/NicolasHug/Surprise) by:
+  ```
+git clone https://github.com/NicolasHug/surprise.git
+python setup.py install
+```
