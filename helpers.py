@@ -5,6 +5,7 @@ from itertools import groupby
 
 import numpy as np
 import scipy.sparse as sp
+import pandas as pd
 
 def read_txt(path):
     """read text file from path."""
@@ -72,24 +73,47 @@ def calculate_mse(real_label, prediction):
     return 1.0 * t.dot(t.T)
 
 
+def predict(item_features, user_features, test_set):
+    """ Apply MF model. Multiply matrices W and Z and select the wished predictions according to test set
+    """
+    # copy test set
+    filled_test = sp.lil_matrix.copy(test_set)
+
+    # compute prediction
+    pred_matrix = np.dot(item_features.T, user_features)
+
+    # fill test set with predicted label
+    users, items, ratings = sp.find(filled_test)
+    for row, col in zip(users, items):
+        filled_test[row, col] = pred_matrix[row, col]
+
+    return filled_test
+
+
+def sp_to_df(sparse):
+    """ Convert scipy.sparse matrix to pandas.DataFrame """
+
+    row, col, rating = sp.find(sparse)
+    row += 1
+    col += 1
+
+    df = pd.DataFrame({'User': row, 'Movie': col, 'Rating': rating})
+    df = df[['User', 'Movie', 'Rating']].sort_values(['Movie', 'User'])
+    return df
+
+def submission_table(original_df, col_userID, col_movie, col_rate):
+    """ return table according with Kaggle convention """
+
+    def id(row):
+        return 'r' + str(int(row[col_userID])) + '_c' + str(int(row[col_movie]))
+
+    def pred(row):
+        return row[col_rate]
+
+    df = pd.DataFrame.copy(original_df)
+    df['Id'] = df.apply(id, axis=1)
+    df['Prediction'] = df.apply(pred, axis=1)
+
+    return df[['Id', 'Prediction']]
+
 #######################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

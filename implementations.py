@@ -4,6 +4,7 @@
 import numpy as np
 import scipy.sparse as sp
 from helpers import *
+import scipy.stats as stats
 
 ########################################################################################
 #EXPLORATORY DATA ANALYSIS
@@ -26,7 +27,7 @@ def calculate_statistics_per_user(ratings):
             user_means.append(user_ratings_mean)
             # calculate std
             dense_arr = np.asarray(nonzeros_user_ratings.todense())
-            user_ratings_std = np.sqrt(np.mean((dense_arr - nonzeros_user_ratings.mean())**2))
+            user_ratings_std = stats.tstd(dense_arr)
             user_stds.append(user_ratings_std)
         else:
             continue
@@ -178,6 +179,7 @@ def compute_error(data, user_features, item_features, nz):
         mse += (data[row, col] - user_info.T.dot(item_info)) ** 2
     return np.sqrt(1.0 * mse / len(nz))
 
+
 def matrix_factorization_SGD(train, test, gamma, num_features, lambda_user, lambda_item, num_epochs):
     """matrix factorization by SGD."""
     # define parameters
@@ -205,22 +207,35 @@ def matrix_factorization_SGD(train, test, gamma, num_features, lambda_user, lamb
         
         for d, n in nz_train:
             # update W_d (item_features[:, d]) and Z_n (user_features[:, n])
-            item_info = item_features[:, d]
-            user_info = user_features[:, n]
-            err = train[d, n] - user_info.T.dot(item_info)
+            item_info = item_features[:,d]
+            user_info = user_features[:,n]
+            #print("item_info.shape: {}, user_info.shape: {}".format(item_info.shape, user_info.shape) ) 
+            #print("item_features.shape: {}, user_features.shape: {}".format(item_features.shape, user_features.shape) ) 
+            
+            
+            err = train[d, n] - np.dot(item_info, user_info.T)  #  user_info.T.dot(item_info)
+            grad_item = err * user_features[:,n]
+            grad_user = err * item_features[:,d]
     
             # calculate the gradient and update
-            item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
-            user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
+            item_features[:,d] += gamma * grad_item #(err * user_info - lambda_item * item_info)
+            user_features[:,n] += gamma * grad_user #(err * item_info - lambda_user * user_info)
 
         rmse = compute_error(train, user_features, item_features, nz_train)
         print("iter: {}, RMSE on training set: {}.".format(it, rmse))
         
         errors.append(rmse)
-
+    print("item_features.shape: {}, user_features.shape: {}".format(item_features.shape, user_features.shape) ) 
+    # predict on test set
+    prediction = predict(item_features, user_features, test)
+    # convert do DataFrame
+    prediction = sp_to_df(prediction)
+        
+        
     # evaluate the test error
     rmse = compute_error(test, user_features, item_features, nz_test)
     print("RMSE on test data: {}.".format(rmse))
+    return prediction
 
 ########################################################################################
 #MATRIX FACTORIZATION - ALS
@@ -302,38 +317,92 @@ def matrix_factorization_ALS(train, test, num_features, lambda_user, lambda_item
     nnz_test = list(zip(nnz_row, nnz_col))
     rmse = compute_error(test, user_features, item_features, nnz_test)
     print("test RMSE after running ALS: {v}.".format(v=rmse))
+    
+
+"""
+Matrix Factorization using Alternating Least Squares (ALS) from PySpark
+"""
+import findspark
+findspark.init()
+from pyspark import SparkContext
+from pyspark import SparkConf
+from pyspark.sql import SQLContext
+from pyspark.mllib.recommendation import ALS
+from rescaler import Rescaler
+import os
 
 
+def predictions_ALS_rescaled(train, test, **kwargs):
+    """
+    ALS with PySpark rescaled.
+    First, a rescaling of the user such that they all have the same average of rating is done.
+    Then, the predictions are done using the function prediction_ALS().
+    Finally, the predictions are rescaled to recover the deviation of each user.
+    Args:
+        train (pandas.DataFrame): train set
+        test (pandas.DataFrame): test set
+        **kwargs: Arbitrary keyword arguments. Directly given to predictions_ALS().
+    Returns:
+        pandas.DataFrame: predictions, sorted by (Movie, User)
+    """
+    # Load the class Rescaler
+    rescaler = Rescaler(train)
+    # Normalize the train data
+    df_train_normalized = rescaler.normalize_deviation()
+
+    # Predict using the normalized trained data
+    prediction_normalized = predictions_ALS(df_train_normalized, test, **kwargs)
+    # Rescale the prediction to recover the deviations
+    prediction = rescaler.recover_deviation(prediction_normalized)
+    return prediction
 
 
+def predictions_ALS(train, test, **kwargs):
+    """
+    ALS with PySpark.
+    Compute the predictions on a test_set after training on a train_set using the method ALS from PySpark.
+    Args:
+        train (pandas.DataFrame): train set
+        test (pandas.DataFrame): test set
+        **kwargs: Arbitrary keyword arguments. Passed to ALS.train() (Except for the spark_context)
+            spark_context (SparkContext): SparkContext passed from the main program. (Useful when using Jupyter)
+            rank (int): Rank of the matrix for the ALS
+            lambda (float): Regularization parameter for the ALS
+            iterations (int): Number of iterations for the ALS
+            nonnegative (bool): Boolean to allow negative values or not.
+    Returns:
+        pandas.DataFrame: predictions, sorted by (Movie, User)
+    """
 
+    # Delete folders that causes troubles
+    os.system('rm -rf metastore_db')
+    os.system('rm -rf __pycache__')
 
+    # Extract Spark Context from the kwargs
+    spark_context = kwargs.pop('spark_context')
 
+    # Convert pd.DataFrame to Spark.rdd
+    sqlContext = SQLContext(spark_context)
 
+    train_sql = sqlContext.createDataFrame(train).rdd
+    test_sql = sqlContext.createDataFrame(test).rdd
 
+    # Train the model
+    model = ALS.train(train_sql, **kwargs)
 
+    # Get the predictions
+    data_for_predictions = test_sql.map(lambda x: (x[0], x[1]))
+    predictions = model.predictAll(data_for_predictions).map(lambda r: ((r[0], r[1]), r[2]))
 
+    # Convert Spark.rdd to pd.DataFrame
+    df = predictions.toDF().toPandas()
 
+    # Post processing database
+    df['User'] = df['_1'].apply(lambda x: x['_1'])
+    df['Movie'] = df['_1'].apply(lambda x: x['_2'])
+    df['Rating'] = df['_2']
+    df = df.drop(['_1', '_2'], axis=1)
+    df = df.sort_values(by=['Movie', 'User'])
+    df.index = range(len(df))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    return df

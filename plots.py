@@ -19,13 +19,14 @@ def plot_raw_data(ratings):
     ax1.plot(sorted_num_movies_per_user, color='blue')
     ax1.set_xlabel("users")
     ax1.set_ylabel("number of ratings (sorted)")
+    ax1.set_xticks(np.arange(0, 1100, 250))
     ax1.grid()
 
     ax2 = fig.add_subplot(1, 2, 2)
     ax2.plot(sorted_num_users_per_movie)
     ax2.set_xlabel("items")
     ax2.set_ylabel("number of ratings (sorted)")
-    ax2.set_xticks(np.arange(0, 12000, 3000))
+    ax2.set_xticks(np.arange(0, 12000, 2000))
     ax2.grid()
 
     plt.tight_layout()
