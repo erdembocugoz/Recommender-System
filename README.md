@@ -7,5 +7,10 @@
 
 * We used python evironment for our project(anaconda)
 
-Libraries can be installed with pip
-* scikit-learn * Pandas * NumPy
+pip install libraries
+* scikit-learn
+* Pandas
+* NumPy
+Install custom libraries
+* Surprise
+  * You can find detailed installation guide and how to use the library here: http://surpriselib.com
