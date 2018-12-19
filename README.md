@@ -12,6 +12,7 @@ pip install libraries
 * Pandas
 * NumPy
 * Pickle ( If somehow it is not installed allready)
+* scipy
 
 Install custom libraries
 * Surprise
@@ -37,7 +38,21 @@ Install custom libraries
   
 ## Files
 
-* *data* 
+* Data Files : 
+  * data_train.csv : train set
+  * data_test.csv : test set provided (originally sampleSubmissionn.csv)
+  * tmp_train.csv : train file obtained from train-test split of train set
+  * tmp_test.csv : test file obtained from train-test split of train set
+* Python files :
+  * model_implementations.py : Contains all the models used for blending (Surprise, PyFM, PySpark, Custom Models)
+  * hyperparameter_tuning.py : Contains functions for hyper parameter tuning for most of the models.
+  * blend.py : Contains blending(voting) function to ensemble different models.
+  * helpers.py : Contains helper functions, i.e. reading csv files, transforming data frames etc.
+  
+## Problem with Spark
+
+It is possible to get an error for Java connection if PySpark's ALS function is used with maxIter value greater than 24. But it is also possible that is a problem only on our devices. 
+  
 
 
 
