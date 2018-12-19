@@ -2,9 +2,9 @@
 
 ## Team Members
 
-Asli Yorusun : asli.yorusun@epfl.ch
-Erdem Bocugoz : erdem.bocugoz@epfl.ch
-Serif Soner Serbest : serif.serbest@epfl.ch
+* Asli Yorusun : asli.yorusun@epfl.ch
+* Erdem Bocugoz : erdem.bocugoz@epfl.ch
+* Serif Soner Serbest : serif.serbest@epfl.ch
 
 
 ## Required Libraries and Setting up the Envioronment 
