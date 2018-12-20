@@ -63,6 +63,8 @@ Install custom libraries
   * hyperparameter_tuning.py : Contains functions for hyper parameter tuning for most of the models.
   * blend.py : Contains blending(voting) function to ensemble different models.
   * implementations.py : Contains helper functions, i.e. reading csv files, transforming data frames etc.
+* Pickle Object:
+* linreg.pkl : linear regression model for blending
   
 ## Possible Problem with Spark
 
