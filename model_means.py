@@ -23,6 +23,7 @@ from matrix_fact_helpers import *
 def implementation_global_mean(train, submission_set):
     """baseline method: use the global mean."""
     # find the non zero ratings in the train
+    print("Global Mean")
     nonzero_train = train[train.nonzero()]
 
     # calculate the global mean
@@ -46,7 +47,7 @@ def implementation_user_mean(train, submission_set):
     """baseline method: use the user means as the prediction."""
     num_users, num_items = train.shape
     user_train_mean = np.zeros((num_users, 1))
-
+    print("User Mean")
     for user_index in range(num_users):
         # find the non-zero ratings for each user in the training dataset
         train_ratings = train[user_index, :]
@@ -75,7 +76,7 @@ def implementation_item_mean(train, submission_set):
     """baseline method: use item means as the prediction."""
     num_users, num_items = train.shape
     item_train_mean = np.zeros((num_items, 1))
-
+    print("Item Mean")
     for item_index in range(num_items):
         # find the non-zero ratings for each item in the training dataset
         train_ratings = train[:, item_index]

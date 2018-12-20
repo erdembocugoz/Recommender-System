@@ -18,6 +18,7 @@ from matrix_fact_helpers import *
 
 def implementation_SGD(train, submission_set):
     # Hyperparameters
+    print("MF SGD")
     gamma = 0.008
     num_features = 20   # K in the lecture notes
     lambda_user = 0.03
@@ -29,6 +30,7 @@ def implementation_SGD(train, submission_set):
 
 def implementation_ALS(train,submission_set):
     # Hyperparameters
+    print("MF ALS")
     num_features = 20   # K in the lecture notes
     lambda_user = 0.1
     lambda_item = 0.7
