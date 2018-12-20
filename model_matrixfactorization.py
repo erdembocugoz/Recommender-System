@@ -23,7 +23,7 @@ def implementation_SGD(train, submission_set):
     num_features = 20   # K in the lecture notes
     lambda_user = 0.03
     lambda_item = 0.25
-    num_epochs = 20     # number of full passes through the train set
+    num_epochs = 1     # number of full passes through the train set
     item_features, user_features = matrix_factorization_SGD(train, gamma, num_features, lambda_user, lambda_item, num_epochs)
     pred = predict(item_features, user_features, submission_set)
     return pred

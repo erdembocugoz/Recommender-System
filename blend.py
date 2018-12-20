@@ -63,7 +63,7 @@ def make_datasets(train_path="data_train.csv",predict_path="data_test.csv"):
     df_train = make_dataframe(train_path)
     df_predict = make_dataframe(predict_path)
 
-    X_train, X_test, y_train, y_test = train_test_split(df_train[['User','Movie']], df_train['Rating'], test_size=0.33, random_state=1234)
+    X_train, X_test, y_train, y_test = train_test_split(df_train[['User','Movie']], df_train['Rating'], test_size=0.5, random_state=56)
     data_train = X_train.join(y_train)
     data_test = X_test.join(y_test)
     data_actual_train = df_train
@@ -88,30 +88,30 @@ def get_predicts(data_train,data_test,spark_context):
     """
     train_file = 'tmp_train.csv'
     test_file = 'tmp_test.csv'
-    data_train.to_csv(train_file, index=False, header=True)
-    data_test.to_csv(test_file, index=False, header=True)
+    data_train.to_csv(train_file, index=False, header=False)
+    data_test.to_csv(test_file, index=False, header=False)
 
-    ratings_train_df = submission_table(data_train, 'User', 'Movie', 'Rating')
-    ratings_test_df = submission_table(data_test, 'User', 'Movie', 'Rating')
-    ratings_train_file = 'ratings_train.csv'
-    ratings_test_file = 'ratings_test.csv'
-    ratings_train_df.to_csv(ratings_train_file, index=False, header=True)
-    ratings_test_df.to_csv(ratings_test_file, index=False, header=True)
+    #ratings_train_df = submission_table(data_train, 'User', 'Movie', 'Rating')
+    #ratings_test_df = submission_table(data_test, 'User', 'Movie', 'Rating')
+    #ratings_train_file = 'ratings_train.csv'
+    #ratings_test_file = 'ratings_test.csv'
+    #ratings_train_df.to_csv(ratings_train_file, index=False, header=True)
+    #ratings_test_df.to_csv(ratings_test_file, index=False, header=True)
 
     als_pred = pyspark_ALS(data_train,data_test,spark_context)
 
 
 
-    ratings_train = load_data_as_scipy(ratings_train_file)
-    ratings_test = load_data_as_scipy(ratings_test_file)
+    #ratings_train = load_data_as_scipy(ratings_train_file)
+    #ratings_test = load_data_as_scipy(ratings_test_file)
 
 
-    pred_globalmean = implementation_global_mean(ratings_train, ratings_test)
-    pred_usermean = implementation_user_mean(ratings_train, ratings_test)
-    pred_itemmean = implementation_item_mean(ratings_train, ratings_test)
+    #pred_globalmean = implementation_global_mean(ratings_train, ratings_test)
+    #pred_usermean = implementation_user_mean(ratings_train, ratings_test)
+    #pred_itemmean = implementation_item_mean(ratings_train, ratings_test)
 
-    pred_sgd = implementation_SGD(ratings_train ,ratings_test)
-    pred_als = implementation_ALS(ratings_train,ratings_test)
+    #pred_sgd = implementation_SGD(ratings_train ,ratings_test)
+    #pred_als = implementation_ALS(ratings_train,ratings_test)
 
 
 
@@ -128,7 +128,8 @@ def get_predicts(data_train,data_test,spark_context):
     knn_ib_pred = surprise_knn_ib(train_file,test_file)
     svd_pred = surprise_SVD(train_file,test_file)
 
-    all_predictions = np.array([baseline_pred,slopeone_pred,knn_ub_pred,knn_ib_pred,svd_pred,svdpp_pred,als_pred,pyfm_pred,pred_globalmean,pred_usermean,pred_itemmean,pred_sgd,pred_als])
+    all_predictions = np.array([baseline_pred,slopeone_pred,knn_ub_pred,knn_ib_pred,svd_pred,svdpp_pred,als_pred,pyfm_pred])
+    #,pred_globalmean,pred_usermean,pred_itemmean,pred_sgd,pred_als])
 
     return all_predictions
 def calculate_rmse(real_labels, predictions):
