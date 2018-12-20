@@ -15,8 +15,9 @@ pip install libraries
 * scikit-learn
 * Pandas
 * NumPy
-* Pickle ( If somehow it is not installed allready)
+* Pickle
 * scipy
+* os
 
 Install custom libraries
 * Surprise
@@ -48,7 +49,12 @@ Install custom libraries
   * tmp_train.csv : train file obtained from train-test split of train set
   * tmp_test.csv : test file obtained from train-test split of train set
 * Python files :
-  * model_implementations.py : Contains all the models used for blending (Surprise, PyFM, PySpark, Custom Models)
+  * model_surprise.py : Contains the models from Surprise library : BaseLineOnly, SlopeOne, KNN, SVD, SVD++
+  * model_pyfm.py : Contains the model from PyFM library (FM refers to Factorization Machine)
+  * model_pyspark.py Contains the model from PySpark library : ALS
+  * model_matrixfactorization.py : Contains the models we implemented by ourselves using Exercise 10 template: SGD, ALS
+  * model_means.py : Contains the models we implemented by ourselves  Global Mean, User Mean, Item Mean
+  * matrix_fact_helpers : Helper functions for the models we implemented from Exerice 10 
   * hyperparameter_tuning.py : Contains functions for hyper parameter tuning for most of the models.
   * blend.py : Contains blending(voting) function to ensemble different models.
   * helpers.py : Contains helper functions, i.e. reading csv files, transforming data frames etc.
