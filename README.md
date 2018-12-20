@@ -36,10 +36,14 @@ Install custom libraries
   
 * PySpark
   * You can find a detailed installation guide for pySpark [here](https://medium.com/tinghaochen/how-to-install-pyspark-locally-94501eefe421)
+  
+
 
 * Data Sets:
   * Data sets are taken from [here](https://www.crowdai.org/challenges/epfl-ml-recommender-system/dataset_files)
   note that you need a epfl e-mail address to reach web site.
+ 
+
   
 ## Files
 
