@@ -37,14 +37,7 @@ Install custom libraries
 * PySpark
   * You can find a detailed installation guide for pySpark [here](https://medium.com/tinghaochen/how-to-install-pyspark-locally-94501eefe421)
   
-* Implicit
-   * 
-   ```
-     pip install implicit 
-  ```
-  * This library requires SciPy version 0.16 or later. Running on OSX requires an OpenMP compiler,
-which can be installed with homebrew: ```brew install gcc```. Running on Windows requires Python
-3.5+.
+
 
 * Data Sets:
   * Data sets are taken from [here](https://www.crowdai.org/challenges/epfl-ml-recommender-system/dataset_files)
